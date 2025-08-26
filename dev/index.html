@@ -1,0 +1,332 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.16.4 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/dev/libs/highlight/github.min.css">
+   
+  <link rel="stylesheet" href="/dev/css/franklin.css">
+<link rel="stylesheet" href="/dev/css/minimal-mistakes.css">
+<link rel="stylesheet" href="/dev/css/makie.css">
+<link rel="icon" href="/dev/assets/icon_transparent.png">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/>
+<!--[if IE ]>
+<style>
+  /* old IE unsupported flexbox fixes */
+  .greedy-nav .site-title {
+    padding-right: 3em;
+  }
+  .greedy-nav button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+  }
+</style>
+<![endif]-->
+
+   <title>Home</title>  
+  <!-- end custom head snippets -->
+</head>
+<body class="layout--single">
+  <div class="site-container">
+    <div class="masthead">
+    <div class="masthead__inner-wrap">
+        <div class="masthead__menu">
+            <nav id="site-nav" class="greedy-nav">
+                <a class="title-icon" href="/dev/"><img src="/dev/assets/makie_logo_transparent.svg"/></a>
+                <!-- github link -->
+                
+
+                <ul class="visible-links">
+                    <li class="masthead__menu-item">
+                        <a href="https://github.com/JuliaPlots/Makie.jl"><img src="/dev/assets/GitHub-Mark-64px.png" class="masthead-icon" /></a>
+                    </li>
+                    <li class="masthead__menu-item"><a href="/dev/examples/">Examples</a></li>
+                    <li class="masthead__menu-item"><a href="/dev/tutorials/">Tutorials</a></li>
+                    <li class="masthead__menu-item"><a href="/dev/documentation/">Documentation</a></li>
+                </ul>
+                <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+                <ul class="hidden-links hidden"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+    
+    <div class="banner-container"></div>
+    
+      <div id="main" role="main">
+        <div id="overlay"></div>
+        <div id="navbar-container">
+          <div id="navbar">
+            <form id="lunrSearchForm" name="lunrSearchForm" action="/dev/search/index.html">
+              <input class="search-input" name="q" placeholder="Search docs" type="text">
+            </form>
+            <h1>Navigation</h1>
+            <ul><li><div class="tocitem-container"><a  href="/dev/">Home</a></div></li>
+<li><input class="collapse-toggle" id="menuitem-2" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-2"><i class="docs-chevron"></i></label><a  href="/dev/examples">Examples</a></div><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-2-1"><i class="docs-chevron"></i></label><a  href="/dev/examples/layoutables">Layoutables &amp; Widgets</a></div><ul><li><div class="tocitem-container"><a  href="/dev/examples/layoutables/axis">Axis</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/axis3">Axis3</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/box">Box</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/button">Button</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/colorbar">Colorbar</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/gridlayout">GridLayout</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/intervalslider">IntervalSlider</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/label">Label</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/legend">Legend</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/lscene">LScene</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/menu">Menu</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/slider">Slider</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/textbox">Textbox</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/layoutables/toggle">Toggle</a></div></li>
+</ul></li>
+<li><input class="collapse-toggle" id="menuitem-2-2" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-2-2"><i class="docs-chevron"></i></label><a  href="/dev/examples/plotting_functions">Plotting functions</a></div><ul><li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/abline">abline&#33;</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/arrows">arrows</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/band">band</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/barplot">barplot</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/boxplot">boxplot</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/contour">contour</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/contourf">contourf</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/crossbar">crossbar</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/density">density</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/errorbars">errorbars</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/heatmap">heatmap</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/hist">hist</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/hvlines">hlines&#33; and vlines&#33;</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/hvspan">hspan&#33; and vspan&#33;</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/image">image</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/lines">lines</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/linesegments">linesegments</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/mesh">mesh</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/meshscatter">meshscatter</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/poly">poly</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/rangebars">rangebars</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/scatter">scatter</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/scatterlines">scatterlines</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/series">series</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/stairs">stairs</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/stem">stem</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/streamplot">streamplot</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/surface">surface</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/text">text</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/violin">violin</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/volume">volume</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/volumeslices">volumeslices</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/examples/plotting_functions/wireframe">wireframe</a></div></li>
+</ul></li>
+</ul></li>
+<li><input class="collapse-toggle" id="menuitem-3" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-3"><i class="docs-chevron"></i></label><a  href="/dev/tutorials">Tutorials</a></div><ul><li><div class="tocitem-container"><a  href="/dev/tutorials/basic-tutorial">Basic Tutorial</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/tutorials/layout-tutorial">Layout Tutorial</a></div></li>
+</ul></li>
+<li><input class="collapse-toggle" id="menuitem-4" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-4"><i class="docs-chevron"></i></label><a  href="/dev/documentation">Documentation</a></div><ul><li><div class="tocitem-container"><a  href="/dev/documentation/api_reference">API reference</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/animation">Animations</a></div></li>
+<li><input class="collapse-toggle" id="menuitem-4-3" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-4-3"><i class="docs-chevron"></i></label><a  href="/dev/documentation/backends_and_output">Backends &amp; Output</a></div><ul><li><div class="tocitem-container"><a  href="/dev/documentation/backends_and_output/figure_size">Exporting a Figure with physical dimensions</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/backends_and_output/wglmakie">JSServe and WGLMakie</a></div></li>
+</ul></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/cameras">Cameras</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/colors">Colors</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/events">Events</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/faq">Frequently Asked Questions</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/figure">Figures</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/inspector">Inspecting Data</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/latex">LaTeX</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/layoutables">Layoutables</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/layouting">How layouts work</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/lighting">Lighting</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/nodes">Observables &amp; Interaction</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/plot_method_signatures">Plot Method Signatures</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/recipes">Plot Recipes</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/remote">Remote servers</a></div></li>
+<li><div class="tocitem-container"><a  href="/dev/documentation/scenes">Scenes</a></div></li>
+<li><input class="collapse-toggle" id="menuitem-4-19" type="checkbox" ><div class="tocitem-container"><label class="tocexpander" for="menuitem-4-19"><i class="docs-chevron"></i></label><a  href="/dev/documentation/theming">Theming</a></div><ul><li><div class="tocitem-container"><a  href="/dev/documentation/theming/predefined_themes">Predefined themes</a></div></li>
+</ul></li>
+</ul></li>
+</ul>
+          </div>
+        </div>
+
+
+<!-- Content appended here -->
+<div class="franklin-content"><h2 id="welcome_to_makie"><a href="#welcome_to_makie" class="header-anchor">Welcome to Makie&#33;</a></h2>
+<p>Makie is a data visualization ecosystem for the <a href="https://julialang.org/">Julia</a> programming language, with high performance and extensibility. It is available for Windows, Mac and Linux.</p>
+<h2 id="example"><a href="#example" class="header-anchor">Example</a></h2>
+
+<label for="hidecode" class="hidecode">Expand code</label>
+<input id="hidecode" class="hidecode" type="checkbox">
+
+<pre><code class="language-julia">using GLMakie
+
+Base.@kwdef mutable struct Lorenz
+    dt::Float64 &#61; 0.01
+    σ::Float64 &#61; 10
+    ρ::Float64 &#61; 28
+    β::Float64 &#61; 8/3
+    x::Float64 &#61; 1
+    y::Float64 &#61; 1
+    z::Float64 &#61; 1
+end
+
+function step&#33;&#40;l::Lorenz&#41;
+    dx &#61; l.σ * &#40;l.y - l.x&#41;
+    dy &#61; l.x * &#40;l.ρ - l.z&#41; - l.y
+    dz &#61; l.x * l.y - l.β * l.z
+    l.x &#43;&#61; l.dt * dx
+    l.y &#43;&#61; l.dt * dy
+    l.z &#43;&#61; l.dt * dz
+    Point3f&#40;l.x, l.y, l.z&#41;
+end
+
+attractor &#61; Lorenz&#40;&#41;
+
+points &#61; Node&#40;Point3f&#91;&#93;&#41;
+colors &#61; Node&#40;Int&#91;&#93;&#41;
+
+set_theme&#33;&#40;theme_black&#40;&#41;&#41;
+
+fig, ax, l &#61; lines&#40;points, color &#61; colors,
+    colormap &#61; :inferno, transparency &#61; true,
+    axis &#61; &#40;; type &#61; Axis3, protrusions &#61; &#40;0, 0, 0, 0&#41;,
+        viewmode &#61; :fit, limits &#61; &#40;-30, 30, -30, 30, 0, 50&#41;&#41;&#41;
+
+record&#40;fig, joinpath&#40;@OUTPUT, &quot;lorenz.mp4&quot;&#41;, 1:120&#41; do frame
+    for i in 1:50
+        push&#33;&#40;points&#91;&#93;, step&#33;&#40;attractor&#41;&#41;
+        push&#33;&#40;colors&#91;&#93;, frame&#41;
+    end
+    ax.azimuth&#91;&#93; &#61; 1.7pi &#43; 0.3 * sin&#40;2pi * frame / 120&#41;
+    notify.&#40;&#40;points, colors&#41;&#41;
+    l.colorrange &#61; &#40;0, frame&#41;
+end</code></pre>
+
+<video src="/dev/assets/index/code/output/lorenz.mp4" controls="true" loop="true"></video>
+
+<h2 id="installation_and_import"><a href="#installation_and_import" class="header-anchor">Installation and Import</a></h2>
+<p>Add one or more of the Makie backend packages <a href="https://github.com/JuliaPlots/Makie.jl/tree/master/GLMakie"><code>GLMakie.jl</code></a> &#40;OpenGL&#41;, <a href="https://github.com/JuliaPlots/Makie.jl/tree/master/CairoMakie"><code>CairoMakie.jl</code></a> &#40;Cairo&#41;, or <a href="https://github.com/JuliaPlots/Makie.jl/tree/master/WGLMakie"><code>WGLMakie.jl</code></a> &#40;WebGL&#41; using Julia&#39;s inbuilt package manager. Each backend re-exports <code>Makie</code> so there&#39;s no need to install it separately.</p>
+<pre><code class="language-julia">&#93;add GLMakie
+using GLMakie</code></pre>
+<p>To switch to a different backend, for example <code>CairoMakie</code>, call <code>CairoMakie.activate&#33;&#40;&#41;</code>.</p>
+<h2 id="first_steps"><a href="#first_steps" class="header-anchor">First Steps</a></h2>
+<div class="box-container"><div class="box"><a class="boxlink" href="tutorials/basic-tutorial/">
+<div class="title">Basic Tutorial</div>
+<div class="box-content"><div class="description">Learn the basics of plotting with Makie.</div>
+ 
+      <img src="/dev/assets/basic_tutorial_example.png"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="tutorials/layout-tutorial/">
+<div class="title">Layout Tutorial</div>
+<div class="box-content"><div class="description">Check out how to make complex plots and layouts.</div>
+ 
+      <img src="/dev/assets/tutorials/layout-tutorial/code/output/final_result.png"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="examples/plotting_functions/">
+<div class="title">Plot Examples</div>
+<div class="box-content"><div class="description">Have a look at this list of examples for the available plotting functions.</div>
+ 
+      <img src="/dev/assets/examples/plotting_functions/heatmap/code/output/mandelbrot_heatmap.png"></div>
+</a></div></div>
+<h2 id="makie_ecosystem"><a href="#makie_ecosystem" class="header-anchor">Makie Ecosystem</a></h2>
+<p>There are three backends, each of which has particular strengths. You can switch between backends at any time.</p>
+<div class="box-container"><div class="box"><a class="boxlink" href="https://github.com/JuliaPlots/Makie.jl/tree/master/GLMakie">
+<div class="title">GLMakie.jl</div>
+<div class="box-content"><div class="description">GPU-powered, interactive 2D and 3D plotting in standalone <code>GLFW.jl</code> windows.</div>
+ 
+      <img src="/dev/assets/surface_example.png"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="https://github.com/JuliaPlots/Makie.jl/tree/master/CairoMakie">
+<div class="title">CairoMakie.jl</div>
+<div class="box-content"><div class="description"><code>Cairo.jl</code> based, non-interactive 2D backend for publication-quality vector graphics.</div>
+ 
+      <img src="/dev/assets/density_example.png"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="https://github.com/JuliaPlots/Makie.jl/tree/master/WGLMakie">
+<div class="title">WGLMakie.jl</div>
+<div class="box-content"><div class="description">WebGL-based interactive 2D and 3D plotting that runs within browsers.</div>
+ 
+      <img src="/dev/assets/wireframe_example.png"></div>
+</a></div></div>
+<p>The differences between backends are explained in more details under <a href="/dev/documentation/backends_and_output/index.html#backends_output">Backends &amp; Output</a>.</p>
+<h3 id="extensions_and_resources"><a href="#extensions_and_resources" class="header-anchor">Extensions and Resources</a></h3>
+<p>These packages and sites are maintained by third parties. If you install packages, keep an eye on version conflicts or downgrades as the Makie ecosystem is developing quickly so things break occasionally.</p>
+<div class="box-container"><div class="box"><a class="boxlink" href="https://github.com/JuliaPlots/AlgebraOfGraphics.jl/">
+<div class="title">AlgebraOfGraphics.jl</div>
+<div class="box-content"><div class="description">Grammar-of-graphics style plotting, inspired by ggplot2.</div>
+ 
+      <img src="/dev/assets/algebraofgraphics_example.svg"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="https://lazarusa.github.io/BeautifulMakie/">
+<div class="title">Beautiful Makie</div>
+<div class="box-content"><div class="description">This third-party gallery contains many advanced examples.</div>
+ 
+      <img src="/dev/assets/beautifulmakie_example.png"></div>
+</a></div>
+<div class="box"><a class="boxlink" href="https://github.com/JuliaPlots/GeoMakie.jl">
+<div class="title">GeoMakie.jl</div>
+<div class="box-content"><div class="description">Geographic plotting utilities including projections.</div>
+ 
+      <img src="/dev/assets/geomakie_example.png"></div>
+</a></div></div>
+<h2 id="getting_help"><a href="#getting_help" class="header-anchor">Getting Help</a></h2>
+<ol>
+<li><p>Use the REPL <code>?</code> help mode.</p>
+</li>
+<li><p>Click this link to open a preformatted topic on the <a href="https://discourse.julialang.org/new-topic?title&#61;Makie&#37;20-&#37;20Your&#37;20question&#37;20here&amp;category&#61;domain/viz&amp;tags&#61;Makie&amp;body&#61;You&#37;20can&#37;20write&#37;20your&#37;20question&#37;20in&#37;20this&#37;20space.&#37;0A&#37;0ABefore&#37;20asking&#37;2C&#37;20please&#37;20take&#37;20a&#37;20minute&#37;20to&#37;20make&#37;20sure&#37;20that&#37;20you&#37;20have&#37;20installed&#37;20the&#37;20latest&#37;20available&#37;20versions&#37;20and&#37;20have&#37;20looked&#37;20at&#37;20&#37;5Bthe&#37;20most&#37;20recent&#37;20documentation&#37;5D&#40;http&#37;3A&#37;2Fmakie.juliaplots.org&#37;2Fstable&#37;2F&#41;&#37;20&#37;3Ainnocent&#37;3A">Julia Discourse Page</a>. If you do this manually, please use the category Domain/Visualization and tag questions with <code>Makie</code> to increase their visibility.</p>
+</li>
+<li><p>For casual conversation about Makie and its development, have a look at the <code>#makie</code> channel in the <a href="https://julialang.org/slack/">Julia Slack group</a>. Please direct your usage questions to <a href="https://discourse.julialang.org/new-topic?title&#61;Makie&#37;20-&#37;20Your&#37;20question&#37;20here&amp;category&#61;domain/viz&amp;tags&#61;Makie&amp;body&#61;You&#37;20can&#37;20write&#37;20your&#37;20question&#37;20in&#37;20this&#37;20space.&#37;0A&#37;0ABefore&#37;20asking&#37;2C&#37;20please&#37;20take&#37;20a&#37;20minute&#37;20to&#37;20make&#37;20sure&#37;20that&#37;20you&#37;20have&#37;20installed&#37;20the&#37;20latest&#37;20available&#37;20versions&#37;20and&#37;20have&#37;20looked&#37;20at&#37;20&#37;5Bthe&#37;20most&#37;20recent&#37;20documentation&#37;5D&#40;http&#37;3A&#37;2Fmakie.juliaplots.org&#37;2Fstable&#37;2F&#41;&#37;20&#37;3Ainnocent&#37;3A">Discourse</a> and not to Slack, to make questions and answers accessible to everybody.</p>
+</li>
+<li><p>For technical issues and bug reports, open an issue in the <a href="https://github.com/JuliaPlots/Makie.jl">Makie.jl</a> repository which serves as the central hub for Makie and backend issues.</p>
+</li>
+</ol>
+<div class="page-foot">
+  <div class="copyright">
+    &copy; Makie.jl. Last modified: August 28, 2021. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+      <p>These docs were autogenerated using Makie: v0.15.2, GLMakie: v0.4.6, CairoMakie: v0.6.5, WGLMakie: v0.4.6</p>
+  </div>
+</div>
+</div><!-- CONTENT ENDS HERE -->
+
+      </div> <!-- closure of main -->
+
+      <div class="page__footer">
+        <footer>
+          <!-- start custom footer snippets -->
+          <!-- end custom footer snippets -->
+          <div class="page__footer-follow">
+            <ul class="social-icons">
+              <li><a href="https://twitter.com/MakiePlots" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+              <li><a href="https://github.com/JuliaPlots/Makie.jl" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+            </ul>
+          </div>
+          <div class="page__footer-copyright">&copy; Makie.jl. Powered by <a href="https://github.com/tlienart/Franklin.jl">Franklin</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+        </footer>
+      </div>
+
+    </div>   <!-- closure of class site-container -->
+
+    
+
+    <script src="/dev/libs/navbar.js"></script>
+    <script src="/dev/libs/lunr/lunr.min.js"></script>
+    <script src="/dev/libs/lunr/lunr_index.js"></script>
+    <script src="/dev/libs/lunr/lunrclient.min.js"></script>
+    <!-- <script src="/dev/libs/minimal-mistakes/main.min.js"></script> -->
+    <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js" integrity="sha384-DJ25uNYET2XCl5ZF++U8eNxPWqcKohUUBUpKGlNLMchM7q4Wjg2CUpjHLaL8yYPH" crossorigin="anonymous"></script>
+
+    
+    
+        <script src="/dev/libs/highlight/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
