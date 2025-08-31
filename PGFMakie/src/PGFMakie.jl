@@ -1,17 +1,19 @@
 module PGFMakie
 
-using Makie
-using LaTeXStrings
-using DocStringExtensions
 using Cairo
 using Colors
-using Poppler_jll
+using DocStringExtensions
+using FileIO
 using Ghostscript_jll
+using LaTeXStrings
+using Makie
+using Makie: MakieScreen, Plot, Scene
 using PermutedArrays
-
-using Makie: Plot, Scene, MakieScreen
+using Poppler_jll
 
 include("texdocument.jl")
 include("screen.jl")
+include("display.jl")
+include("plot_primitives.jl")
 
 end

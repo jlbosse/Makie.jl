@@ -100,6 +100,9 @@ const MAKIE_DEFAULT_THEME = Attributes(
         pdf_version = nothing
     ),
 
+    PGFMakie = Attributes(
+    ),
+
     GLMakie = Attributes(
         # Renderloop
         renderloop = automatic,

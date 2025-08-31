@@ -1,7 +1,5 @@
 # This is all stolen from MakieTex -- I should understand what is going on here!
 
-using Base: PermutedDimsArrays
-
 # MakieTex/src/MakeTex.jl
 # =============================================================================
 "Render with Poppler pipeline (true) or Cairo pipeline (false)"
@@ -276,8 +274,9 @@ Base.size(cached::AbstractCachedDocument) = cached.dims
 # MakieTex/src/tex.jl
 # =============================================================================
 function rasterize(ct::CachedTEX, scale::Int64 = 1)
-    raster = page2img(ct, ct.doc.page; scale=scale, render_density=10)
-    return PermutedDimsArray(raster, (2, 1))
+    raster = page2img(ct, ct.doc.page; scale=scale, render_density=5)
+    return raster
+    # return PermutedDimsArray(raster, (2, 1))
 end
 
 # The main compilation method - compiles arbitrary LaTeX documents
