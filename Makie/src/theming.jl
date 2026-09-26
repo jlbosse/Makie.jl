@@ -101,6 +101,14 @@ const MAKIE_DEFAULT_THEME = Attributes(
     ),
 
     PGFMakie = Attributes(
+        px_per_unit = 2.0,
+        pt_per_unit = 0.75,
+        tex_engine = "lualatex",
+        preamble = "",
+        set_fontsize = true,
+        raster_fallback = true,
+        visible = true,
+        start_renderloop = false,
     ),
 
     GLMakie = Attributes(

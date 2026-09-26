@@ -1,45 +1,41 @@
 name = "PGFMakie"
 uuid = "6c6cd02c-f0fb-4e18-bbdb-42916eef200d"
 authors = ["Jan Lukas Bosse <janlukas.bosse@gmail.com> and contributors"]
-version = "1.0.0-DEV"
+version = "0.1.0"
 
 [deps]
-Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
-ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
-DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-Ghostscript_jll = "61579ee1-b43e-5ca0-a5da-69d92c66a64b"
-ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
-ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
-Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
-PermutedArrays = "aa3a806a-e146-4a0b-abc5-6bb34b5dedb7"
+PNGFiles = "f57f5aa1-a3ce-4bc8-8ab9-96f992907883"
 Poppler_jll = "9c32591e-4766-534b-9725-b71a8799265b"
-TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
-
-[sources]
-Makie = {path = "../Makie"}
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-Cairo = "1.1.1"
-ColorTypes = "0.12.1"
-DocStringExtensions = "0.9.5"
-FileIO = "1.17.0"
-Ghostscript_jll = "9.55.1"
-ImageCore = "0.10.5"
-ImageIO = "0.6.9"
-Images = "0.26.2"
-LaTeXStrings = "1.4.0"
-PermutedArrays = "0.1.0"
-Poppler_jll = "24.6.0"
-TikzPictures = "3.2.0"
-julia = "1.3"
+CairoMakie = "=0.15.15"
+Colors = "0.10, 0.11, 0.12, 0.13"
+FileIO = "1.6"
+GeometryBasics = "0.5"
+LaTeXStrings = "1.2"
+LinearAlgebra = "1.0, 1.6"
+Makie = "=0.24.15"
+PNGFiles = "0.4.4"
+Poppler_jll = "21, 22, 23, 24, 25"
+Printf = "1.0, 1.6"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
+
+[sources.CairoMakie]
+path = "../CairoMakie"
+
+[sources.Makie]
+path = "../Makie"
