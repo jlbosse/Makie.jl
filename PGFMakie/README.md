@@ -8,8 +8,3 @@ MakieTex.jl to understand how to get tex strings to rasterized, Makie friendly i
 ## TODO
  - Everything
 
-## Plan of attack
- - Copy over TEXDocument and CachedTEX from MakieTex.jl
- - Copy over everything needed to get `rasterize(::CachedTEX)` to work
- - Hook this up into `Makie.colorbuffer`
- - Maybe/hopefully get some constants to plot?
