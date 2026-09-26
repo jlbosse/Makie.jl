@@ -212,6 +212,8 @@ corner at `(x, y)` (scene pixel space, y-down) with the given size.
 function emit_image(screen::Screen, img::AbstractMatrix, x, y, iw, ih; interpolate::Bool = true)
     w = screen.writer
     stem = screen.image_stem === nothing ? "figure" : basename(screen.image_stem)
+    # file names are used in LaTeX, where spaces and special characters break \pgfimage
+    stem = replace(stem, r"[^A-Za-z0-9_-]" => "_")
     name = string(stem, "-img", length(screen.images) + 1, ".png")
     push!(screen.images, name => convert(Matrix{RGBA{Colors.N0f8}}, img))
     emitln(

@@ -41,7 +41,7 @@ function draw_atomic(scene::Scene, screen::Screen, plot::Union{Heatmap, Image})
         iw, ih = abs(p1[1] - p0[1]), abs(p1[2] - p0[2])
         (iw > 0 && ih > 0) || return
         emit_image(screen, map(c -> RGBA{Colors.N0f8}(clamp01(RGBAf(c))), img), x, y, iw, ih; interpolate = a.interpolate)
-    elseif ni * nj <= MAX_VECTOR_CELLS && !a.interpolate
+    elseif ni * nj <= MAX_VECTOR_CELLS && !a.interpolate && has_default_uv_transform(plot)
         draw_rect_heatmap(screen.writer, a, xs, ys, colors)
     else
         draw_rasterized(scene, screen, plot, screen.config.px_per_unit)
@@ -51,10 +51,19 @@ end
 
 clamp01(c::RGBAf) = RGBAf(clamp(red(c), 0, 1), clamp(green(c), 0, 1), clamp(blue(c), 0, 1), clamp(alpha(c), 0, 1))
 
+# Images flip their texture coordinates vertically by default
+const DEFAULT_IMAGE_UV_TRANSFORM = Mat{2, 3, Float32}(1, 0, 0, -1, 0, 1)
+
+"""
+    has_default_uv_transform(plot)
+
+Whether the image data is drawn as-is. Other `uv_transform`s (rotations, flips,
+zooms) are left to CairoMakie's rasterization.
+"""
 function has_default_uv_transform(plot)
     plot isa Heatmap && return true
     T = plot.uv_transform[]
-    return T == Mat{2, 3, Float32}(1, 0, 0, 1, 0, 0) || T === nothing
+    return T === nothing || (T isa Mat{2, 3} && T ≈ DEFAULT_IMAGE_UV_TRANSFORM)
 end
 
 function draw_rect_heatmap(w::PGFWriter, a, xs, ys, colors)

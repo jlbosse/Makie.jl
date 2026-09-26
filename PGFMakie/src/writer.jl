@@ -236,3 +236,29 @@ function clip_rect(w::PGFWriter, x, y, rw, rh)
     rectangle(w, x, y, rw, rh)
     return usepath(w, :clip)
 end
+
+# Outlined text. PDF strokes glyphs when the text rendering mode (`Tr`) is 1
+# (stroke) or 2 (fill and stroke). `\pgfsys@invoke` writes the operator with
+# whichever driver is active.
+
+"""
+    begin_text_stroke(w, fill_visible, strokewidth, strokecolor)
+
+Set up stroked text for the next `\\pgftext`. Returns LaTeX code which must be
+placed inside the text after any `\\color` (which sets the stroke color too).
+Must be followed by [`end_text_stroke`](@ref).
+"""
+function begin_text_stroke(w::PGFWriter, fill_visible::Bool, strokewidth::Real, strokecolor::Colorant)
+    strokecolor = RGBAf(strokecolor)
+    set_linewidth(w, strokewidth)
+    define_color(w, "pgfmakietextstroke", strokecolor)
+    emitln(w, "\\pgfsetstrokeopacity{", fmt(clamp(alpha(strokecolor), 0, 1)), "}")
+    emitln(w, "\\pgfsys@invoke{", fill_visible ? 2 : 1, " Tr}")
+    w.stroke_color = nothing
+    return "\\pgfsetstrokecolor{pgfmakietextstroke}"
+end
+
+end_text_stroke(w::PGFWriter) = emitln(w, "\\pgfsys@invoke{0 Tr}")
+
+"Whether a text/marker stroke with this width and color is visible."
+has_visible_stroke(strokewidth, strokecolor) = strokewidth > 0 && alpha(RGBAf(to_color(strokecolor))) > 0

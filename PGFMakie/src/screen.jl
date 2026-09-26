@@ -9,10 +9,17 @@
   The default matches CairoMakie's PDF output, i.e. a `Figure(size = (600, 450))`
   becomes a 450bp × 337.5bp picture.
 * `tex_engine::String = "lualatex"`: LaTeX engine used to compile PDF and PNG output.
-* `preamble::String = ""`: additional preamble inserted into the documents generated
-  for `.tex`, `.pdf` and `.png` output. It is also shown as a comment in `.pgf` files.
+* `preamble::Union{String, Automatic} = automatic`: additional preamble inserted into the
+  documents generated for `.tex`, `.pdf` and `.png` output. It is also shown as a comment
+  in `.pgf` files. `automatic` loads `unicode-math` if `tex_engine` supports it
+  (LuaLaTeX, XeLaTeX) and is empty otherwise.
 * `set_fontsize::Bool = true`: if true, text is set in Makie's font size using `\\fontsize`.
   Otherwise the font size of the surrounding LaTeX document is used.
+* `bold_weight::Union{Int, Automatic} = automatic`: LaTeX fonts usually only have a regular
+  and a bold weight, so font weights (100 = thin, 400 = regular, 500 = medium, 700 = bold, ...)
+  have to be mapped to one of them. Text with a weight of at least `bold_weight` is set in bold.
+  `automatic` makes everything heavier than the most common weight of the figure bold, e.g.
+  Medium titles in a figure with Light tick labels (AlgebraOfGraphics' theme).
 * `raster_fallback::Bool = true`: plots which can't be represented as PGF (3D meshes,
   surfaces, volumes, ...) are rasterized with CairoMakie. If false, they are skipped with a warning.
 * `visible::Bool = true`: if true, `display` opens the compiled PDF in a viewer.
@@ -22,8 +29,9 @@ struct ScreenConfig
     px_per_unit::Float64
     pt_per_unit::Float64
     tex_engine::String
-    preamble::String
+    preamble::Union{String, Makie.Automatic}
     set_fontsize::Bool
+    bold_weight::Union{Int, Makie.Automatic}
     raster_fallback::Bool
     visible::Bool
     start_renderloop::Bool
@@ -60,6 +68,8 @@ function to_output_type(mime::MIME{SYM}) where {SYM}
     s == "application/x-tex" && return TEX
     s == "application/pdf" && return PDF
     s == "image/png" && return PNG
+    # html output embeds a png (see Makie's `backend_show` for WEB_MIMES)
+    mime isa Union{Makie.WEB_MIMES...} && return PNG
     error("PGFMakie can't produce output for MIME $(s)")
 end
 
@@ -84,11 +94,13 @@ mutable struct Screen <: Makie.MakieScreen
     # images to be written next to the output, as (filename, image) pairs.
     # The filename is relative to the directory of the output
     images::Vector{Pair{String, Matrix{RGBA{Colors.N0f8}}}}
+    # minimal font weight which is set in bold, see `bold_threshold`
+    bold_at::Int
 end
 
 function Screen(scene::Scene, config::ScreenConfig, output::OutputType = PNG, image_stem = nothing)
     writer = PGFWriter(config.pt_per_unit)
-    return Screen(scene, config, output, image_stem, writer, Pair{String, Matrix{RGBA{Colors.N0f8}}}[])
+    return Screen(scene, config, output, image_stem, writer, Pair{String, Matrix{RGBA{Colors.N0f8}}}[], 600)
 end
 
 function Screen(scene::Scene; screen_config...)

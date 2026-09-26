@@ -5,7 +5,17 @@
 const PGF_MIME = MIME"application/x-pgf"
 const TEX_MIME = MIME"application/x-tex"
 
-const SUPPORTED_MIMES = Set(["application/x-pgf", "application/x-tex", "application/pdf", "image/png"])
+# MIMEs used to display figures (e.g. inline in notebooks). The web MIMEs use
+# Makie's fallback, which embeds the PNG in an `<img>` tag with the logical figure
+# size, so frontends that ignore the PNG's dpi (like VS Code) don't show it at
+# `px_per_unit` times the size. Like CairoMakie, PDF isn't offered for display
+# (saving to .pdf doesn't depend on this).
+const SUPPORTED_MIMES = Set(
+    [
+        map(x -> string(x()), Makie.WEB_MIMES)...,
+        "application/x-pgf", "application/x-tex", "image/png",
+    ]
+)
 
 Makie.backend_showable(::Type{Screen}, ::MIME{SYM}) where {SYM} = string(SYM) in SUPPORTED_MIMES
 
@@ -17,6 +27,7 @@ Draw the scene of `screen` into its writer, collecting sidecar images.
 function render!(screen::Screen)
     empty!(screen)
     Makie.push_screen!(screen.scene, screen)
+    screen.bold_at = bold_threshold(screen)
     pgf_draw(screen, screen.scene)
     return screen
 end

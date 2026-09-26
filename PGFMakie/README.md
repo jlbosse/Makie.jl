@@ -63,8 +63,11 @@ PGFMakie.activate!(
     pt_per_unit = 0.75,       # size of a Makie unit in bp (matches CairoMakie PDFs)
     px_per_unit = 2.0,        # resolution of rasterized content and PNG output
     tex_engine = "lualatex",  # engine for PDF/PNG output
-    preamble = "",            # extra preamble for .tex/.pdf/.png output
+    preamble = automatic,     # extra preamble for .tex/.pdf/.png output; automatic loads
+                              # unicode-math with lualatex/xelatex
     set_fontsize = true,      # use Makie's font sizes; false = inherit document font size
+    bold_weight = automatic,  # font weight from which text is bold (e.g. 500 = Medium);
+                              # automatic: anything heavier than the figure's most common weight
     raster_fallback = true,   # rasterize unsupported plots with CairoMakie
 )
 ```
@@ -73,6 +76,17 @@ Makie lays out figures (e.g. the space reserved for tick labels) using its own
 fonts, so text typeset by LaTeX can be slightly wider or narrower than Makie
 expected. Each line of text is anchored at the aligned point of Makie's layout,
 so alignment is preserved.
+
+Common Unicode math characters in strings (Greek letters, `≤`, `±`, `²`, `ₚ`, ...)
+are translated to LaTeX commands, so they work in any document. Rich text
+(e.g. `rich("10", superscript("3"))`, as used for log-scale tick labels) is
+translated to LaTeX as well.
+
+Text is typeset in your document's font, which usually only has a regular
+and a bold weight. Makie's font weights are mapped to these relative to the
+figure: text heavier than the most common weight becomes bold. For example,
+with AlgebraOfGraphics' theme (Light tick labels, Medium titles) the titles are
+bold. Set `bold_weight` to use a fixed threshold instead.
 
 When using a preamble which changes fonts (e.g. `\usepackage{lmodern}` or
 `fontspec`), pass the same preamble to your document.

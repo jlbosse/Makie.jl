@@ -92,7 +92,7 @@ function draw_atomic_scatter(screen::Screen, attr::NamedTuple)
 
         if marker isa Char
             flush_batch!()
-            draw_char_marker(w, marker, attr.font, proj_pos, jl_mat, col)
+            draw_char_marker(w, marker, attr.font, proj_pos, jl_mat, col, strokewidth, strokecolor)
             return
         end
 
@@ -183,16 +183,20 @@ end
 Draws a character marker as LaTeX text, centered on the marker position.
 The font size is the length of the (projected) x axis of the marker.
 """
-function draw_char_marker(w::PGFWriter, marker::Char, font, pos, M::Mat2f, color::RGBAf)
+function draw_char_marker(w::PGFWriter, marker::Char, font, pos, M::Mat2f, color::RGBAf, strokewidth, strokecolor)
     xvec = M[:, 1]
     fontsize = norm(xvec)
     angle = rad2deg(atan(-xvec[2], xvec[1]))
     set_fill(w, color)
     define_color(w, "pgfmakietext", color)
+    stroke = has_visible_stroke(strokewidth, strokecolor)
+    strokecmd = stroke ? begin_text_stroke(w, alpha(color) > 0, strokewidth, strokecolor) : ""
     str = escape_latex(string(marker))
     fs = fmt(fontsize * w.scale)
-    return emitln(
-        w, "\\pgftext[at=", qpoint(w, pos), ",rotate=", fmt(angle), "]{\\color{pgfmakietext}",
+    emitln(
+        w, "\\pgftext[at=", qpoint(w, pos), ",rotate=", fmt(angle), "]{\\color{pgfmakietext}", strokecmd,
         "\\fontsize{", fs, "bp}{", fs, "bp}\\selectfont ", str, "}"
     )
+    stroke && end_text_stroke(w)
+    return
 end

@@ -37,9 +37,23 @@ The render loop mirrors `CairoMakie/src/plot-primitives.jl`.
 
 - Each line of text becomes `\pgftext[left,base,at=..., rotate=...]{\pgfmakiealign{h}{...}}`. The macros are defined in `PGF_MACROS` in `latex.jl`.
 - **Plain strings.** The line is anchored on Makie's computed baseline, at the aligned point `j` of the line's extent (computed from `glyph_origins` and `hadvance`). LaTeX then shifts the text horizontally by `j × width`. This relies on a 1:1 match between the characters of the string and the glyphs; if they don't match, the text is anchored on the origin instead.
-- **`LaTeXString`.** Emitted verbatim and anchored at the text origin, using Makie's `align` for both axes (`\pgfmakiealignv`), because MathTeXEngine's ink boxes don't match real LaTeX metrics. Font style commands are skipped, because MathTeXEngine's fonts report italic.
+- **`LaTeXString`.** Emitted verbatim. Vertically it is aligned by Makie's `align` around the text origin (`\pgfmakiealignv`), because MathTeXEngine's ink boxes don't match real LaTeX metrics. Horizontally it is anchored at the *justified* edge of Makie's glyph extent (`justified_anchor`). LaTeX text is usually wider or narrower than Makie's layout, and this keeps e.g. a left-justified `Label` (such as AlgebraOfGraphics' figure subtitle, which `Label` centers in a box of Makie's measured width) flush with the text above it. Rich text uses the same rule. Font style commands are skipped, because MathTeXEngine's fonts report italic.
 - **MathTeXEngine decorations.** The `LineSegments` children of a `Text` plot with `LaTeXString` input (fraction bars etc.) are skipped by `is_tex_decoration`, because LaTeX draws them itself.
-- **Rotation and font size.** Both come from the Jacobian returned by `CairoMakie.project_marker`, so text in any markerspace gets the right size and angle.
+- **Rotation and font size.** Both come from the Jacobian returned by `CairoMakie.project_marker`, so text in any markerspace gets the right size and angle. Uniformly scaled, rotated text uses `\pgftext[rotate=…]`. Anything else (a `Vec2` fontsize, text projected in 3D) is typeset at its height and transformed with the full 2×2 matrix: `\pgftransformcm` in a scope followed by `\pgflowlevelsynccm`, because plain `\pgftext` ignores the coordinate transformation. (Not `\pgflowlevel`/`pgflowlevelscope`: those replace the current transformation instead of composing with it, which misplaces text in scenes away from the figure origin.)
+- **Stroked text** (`text(...; strokewidth)`, `Char` markers with a stroke) uses the PDF text rendering mode, via `\pgfsys@invoke{2 Tr}` (`begin_text_stroke`/`end_text_stroke` in `writer.jl`). `\color` sets the stroke color too, so the stroke color has to be set again inside the text, after `\color`.
+- **Display style math.** `LaTeXString`s get `\everymath{\displaystyle}` (`MATH_STYLE`), local to the text, because MathTeXEngine typesets math in display style.
+- **Line breaks follow Makie's layout.**
+  - Plain strings are split at `\n` and wherever the glyph baseline jumps (word wrap).
+  - In `LaTeXString`s, MathTeXEngine breaks lines only at `\\`; newline characters are spaces, even in triple-quoted strings. PGFMakie does the same.
+  - If Makie broke the text (detected by `count_line_breaks`) or the source contains `\\`, the text is put in a `tabular`, whose column follows the justification, so `\\` separates the rows. Never emit `\\` outside a tabular or paragraph: that's a LaTeX error.
+- **Bold.** If all text in the figure has a single weight, there's no contrast to keep, and SemiBold (600) and heavier is bold (e.g. a figure whose only text is its bold title). Font weights come from style names (`font_weight`: Light 300, Medium 500, SemiBold 600, Bold 700, …). `render!` computes `screen.bold_at` once per render (`bold_threshold`). With `bold_weight = automatic` that is anything heavier than the most common weight of the figure's non-LaTeX text (`base_font_weight`); an `Int` is a fixed threshold. It's relative on purpose: AoG's theme uses Light and Medium, other figures use Medium and Heavy, and a fixed "Medium is bold" rule gets one of the two wrong.
+- **Rich text line breaks.** Makie's rich-text layout creates *no glyph* for newlines, while plain strings do get one per newline. `text_lines(::RichText)` splits the tree with `rich_lines` and supports both cases. Each line uses the font of its own first glyph for bold/italic.
+- **Word wrapping.** LaTeX and rich text with `word_wrap_width > 0` go into a `\parbox` of the equivalent width, and LaTeX does the wrapping.
+- **Rich text** (`rich_to_latex`):
+  - `superscript`/`subscript` become `\textsuperscript`/`\textsubscript`, like Makie's text-mode scripts. This is what log-scale tick labels like `10²` use.
+  - `subsup`/`left_subsup` use the `\pgfmakiesubsup` macros.
+  - Span `color`, `font` and `fontsize` are mapped; font size goes through `\pgfmakiefontscale`, relative to the size in effect.
+- **Unicode** (`to_latex` in `latex.jl`). Greek letters, common operators and super/subscript characters become `\ensuremath{...}` commands, so they work with any engine and preamble; runs of script characters are merged. Other characters pass through. Other symbols from the math/symbol Unicode blocks (`is_math_symbol`, e.g. `◇`) are set as `\ensuremath{◇}`: text fonts usually lack them, math fonts have them. The default `preamble = automatic` loads `unicode-math` for LuaLaTeX and XeLaTeX (`resolved_preamble`).
 
 ## Testing
 
@@ -60,6 +74,10 @@ include("PGFMakie/test/runtests.jl")   # ~2-3 min: compiles every figure with lu
 - **Debugging LaTeX errors.** A failed compile raises `LaTeXError` with the tail of the log. To reproduce by hand, save as `.tex` and run the engine on it.
 
 ## Gotchas
+
+- Sidecar image names come from the output file name. They must be LaTeX safe, so `emit_image` replaces everything except `[A-Za-z0-9_-]`: `\pgfimage` breaks on spaces and prints the filename as text.
+- `image`'s default `uv_transform` is a vertical flip (`DEFAULT_IMAGE_UV_TRANSFORM` in `image.jl`), not the identity. Only that default is drawn as a direct image; other `uv_transform`s are rasterized by CairoMakie.
+- Reference images: `.scratch/render_refimages.jl` renders the ReferenceTests database with both backends into `PGFMakie/reference_images/`. It is shardable, resumable and memory-capped; see the comment at its top. Running many figures in one process grows memory, so use `--heap-size-hint` and few workers. `.scratch/compare_refimages.jl` flags pairs that differ a lot (after blurring, to ignore font differences) and writes `flagged/`, `flagged.txt` and `scores.csv`.
 
 - The first `save` in a fresh session takes over a minute to compile.
 - `FileIO` has no `.pgf` or `.tex` formats. `__init__` registers them, guarded with `haskey(FileIO.sym2info, ...)`.

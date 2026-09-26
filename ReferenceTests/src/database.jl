@@ -50,6 +50,7 @@ macro reference_test(name, code)
                 Makie.set_theme!(;
                     size = (500, 500),
                     CairoMakie = (; px_per_unit = 1),
+                    PGFMakie = (; px_per_unit = 1),
                     GLMakie = (; scalefactor = 1, px_per_unit = 1),
                     WGLMakie = (; scalefactor = 1, px_per_unit = 1)
                 )
