@@ -33,8 +33,22 @@ Plots a triangulation based on the provided position or `Triangulation` from Del
     linestyle = :solid
     "Sets the color of the triangles."
     triangle_color = :transparent
+
+    """
+    Sets the type of line cap used for triangle edges. Options are `:butt` (flat without extrusion),
+    `:square` (flat with half a linewidth extrusion) or `:round`.
+    """
     linecap = @inherit linecap
+    """
+    Controls the rendering at line corners. Options are `:miter` for sharp corners,
+    `:bevel` for cut-off corners, and `:round` for rounded corners. If the corner angle
+    is below `miter_limit`, `:miter` is equivalent to `:bevel` to avoid long spikes.
+    """
     joinstyle = @inherit joinstyle
+    """"
+    Sets the minimum inner line join angle below which miter joins truncate. See
+    also `Makie.miter_distance_to_angle`.
+    """
     miter_limit = @inherit miter_limit
 
     # Convex hull settings
@@ -149,7 +163,8 @@ function get_triangulation_ghost_edges!(ghost_edges, extent, tri, bounding_box)
 end
 
 function get_triangulation_convex_hull!(convex_hull, tri)
-    idx = DelTri.get_convex_hull_vertices(tri)
+    # DelaunayTriangulation hands out the hull starting at an arbitrary vertex
+    idx = canonical_line_order(DelTri.get_convex_hull_vertices(tri))
     empty!(convex_hull)
     sizehint!(convex_hull, length(idx))
     for i in idx

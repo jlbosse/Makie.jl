@@ -96,7 +96,7 @@ end
     ]
 
     scene = Scene(size = (400, 400), camera = cam3d!, lights = lights)
-    @test Makie.get_shading_mode(scene) == MultiLightShading
+    @test scene.compute.lighting_mode[] == MultiLightShading
     p = mesh!(
         scene,
         Rect3f(Point3f(-10, -10, -2.99), Vec3f(20, 20, 0.02)),
@@ -117,7 +117,7 @@ end
     ]
 
     scene = Scene(size = (400, 400), camera = cam3d!, center = false, lights = lights, backgroundcolor = :black)
-    @test Makie.get_shading_mode(scene) == MultiLightShading
+    @test scene.compute.lighting_mode[] == MultiLightShading
     mesh!(
         scene, Sphere(Point3f(0), 1.0f0), color = :white,
         specular = Vec3f(1), shininess = 16.0f0
@@ -139,7 +139,7 @@ end
     lights[2] = Makie.scale(lights[2], 3, 1)
 
     scene = Scene(lights = lights, camera = cam3d!, size = (400, 400))
-    @test Makie.get_shading_mode(scene) == MultiLightShading
+    @test scene.compute.lighting_mode[] == MultiLightShading
     p = mesh!(scene, Rect3f(Point3f(-10, -10, 0.01), Vec3f(20, 20, 0.02)), color = :white)
     update_cam!(scene, Vec3f(0, 0, 7), Vec3f(0, 0, 0), Vec3f(0, 1, 0))
 
@@ -147,17 +147,28 @@ end
 end
 
 @reference_test "Signed Distance Field - FXAA interaction" begin
-    scene = Scene(size = (300, 200), camera = campixel!)
+    scene = Scene(size = (300, 280), camera = campixel!)
 
     # scatter/text shader
     xs = 20:20:280
-    ys = fill(170, length(xs))
+    ys = fill(250, length(xs))
     zs = range(3, 1, length = length(xs))
     scatter!(scene, xs, ys, zs, color = :blue, markersize = 40, fxaa = false)
-    ys = fill(130, length(xs))
+    ys = fill(210, length(xs))
     scatter!(scene, xs, ys, zs, color = :blue, markersize = 40, fxaa = true)
-    ys = fill(90, length(xs))
+    ys = fill(170, length(xs))
     scatter!(scene, xs, ys, zs, color = :blue, markersize = 40, depthsorting = true)
+    subscene = Scene(scene, viewport = Rect2i(0, 70, 300, 80))
+    ys = fill(0.45, length(xs))
+    scatter!(
+        subscene, range(-0.85, 0.85, length(xs)), ys, -zs ./ 3,
+        color = :blue, markersize = 40
+    )
+    ys = fill(-0.45, length(xs))
+    scatter!(
+        subscene, range(-0.85, 0.85, length(xs)), ys, -zs ./ 3,
+        color = :blue, markersize = 40, depthsorting = true
+    )
 
     # lines/linesegments shader
     xs = 20:10:270
@@ -167,8 +178,12 @@ end
     ys = [20 + shift for _ in 1:13 for shift in (-10, 10)]
     lines!(scene, xs, ys, zs, color = :blue, linewidth = 4, fxaa = true)
 
+    # generate a screen/renderlist before mesh so mesh ends up as the last
+    # renderobject. (This is should probably be considered a bug)
+    colorbuffer(scene)
+
     # create some harder contrasts
-    mesh!(scene, Rect2f(0, 0, 300, 200), color = :red)
+    mesh!(scene, Rect2f(0, 0, 300, 280), color = :red)
 
     scene
 end

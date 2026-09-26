@@ -28,6 +28,9 @@ using GeometryBasics
 using DelimitedFiles
 using DelaunayTriangulation
 using SparseArrays
+using DynamicQuantities
+using StructArrays
+using Distributions
 
 basedir(files...) = normpath(joinpath(@__DIR__, "..", files...))
 using Makie: loadasset
@@ -39,6 +42,7 @@ using Images, FixedPointNumbers, Colors, ColorTypes
 include("database.jl")
 include("stable_rng.jl")
 include("compare_media.jl")
+include("refimage_manifest.jl")
 include("runtests.jl")
 include("image_download.jl")
 include("cross_backend_scores.jl")

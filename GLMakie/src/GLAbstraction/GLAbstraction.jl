@@ -7,18 +7,18 @@ using FixedPointNumbers
 using ColorTypes
 using ..GLMakie.GLFW
 using ..GLMakie: ShaderSource
-import ..GLMakie.Makie.ComputePipeline: update!
 import ..GLMakie: DEBUG
 using Printf
 using LinearAlgebra
 using Observables
 using ShaderAbstractions
-using ShaderAbstractions: current_context, is_context_active, context_alive, switch_context!
+using ShaderAbstractions: current_context, is_context_active, context_alive, switch_context!, update!
 using GeometryBasics: StaticVector
 
 import FixedPointNumbers: N0f8, N0f16, N0f8, Normed
 
 import Base: merge, resize!, similar, length, getindex, setindex!
+import ShaderAbstractions: update!
 
 # Debug tools
 const CONTEXT_LOCK1 = ReentrantLock()
@@ -50,7 +50,7 @@ function with_context(f, context)
         error("Context is not alive anymore!")
     end
     old_ctx = nothing
-    lock(CONTEXT_LOCK1) do
+    @lock CONTEXT_LOCK1 begin
         CTX = ShaderAbstractions.ACTIVE_OPENGL_CONTEXT
         old_ctx = isassigned(CTX) ? CTX[] : nothing
         ShaderAbstractions.switch_context!(context)

@@ -175,15 +175,15 @@ module Aggregation
                 out[i, j] = update(op, out[i, j], z)
             end
         end
-
         mini, maxi = Inf, -Inf
-        map!(pixelbuffer, aggbuffer) do x
-            final_value = value(op, x)
+
+        for i in eachindex(pixelbuffer, aggbuffer)
+            final_value = value(op, aggbuffer[i])
             if isfinite(final_value)
                 mini = min(final_value, mini)
                 maxi = max(final_value, maxi)
             end
-            return final_value
+            pixelbuffer[i] = final_value
         end
         c.data_extrema = (mini, maxi)
         return c
@@ -463,11 +463,15 @@ function Makie.plot!(p::DataShader{<:Tuple{Dict{String, Vector{Point{2, Float32}
         total_value = Float32(maximum(sum(map(x -> x.pixelbuffer, values(canvases)))))
         return (canvases, total_value)
     end
-    colors = Dict(k => Makie.wong_colors()[i] for (i, (k, v)) in enumerate(categories))
-    p._categories = colors
+    # sorted, so that colors, draw order and legend entries don't depend on the
+    # hash order of the category dict
+    category_names = sort!(collect(keys(categories)))
+    colors = Dict(k => Makie.wong_colors()[i] for (i, k) in enumerate(category_names))
+    p._categories = [k => colors[k] for k in category_names]
     op = lift(total -> (x -> log10(x + 1) / log10(total + 1)), p, p.total_value)
 
-    for (k, canv) in canvases
+    for k in category_names
+        canv = canvases[k]
         color = colors[k]
         cmap = [(color, 0.0), (color, 1.0)]
         image!(p, canv, identity, op; colorrange = Vec2f(0, 1), colormap = cmap)
@@ -491,7 +495,7 @@ end
 Base.getindex(x::FakePlot, key::Symbol) = getindex(getfield(x, :attributes), key)
 
 function get_plots(plot::DataShader)
-    return map(collect(plot._categories[])) do (name, color)
+    return map(plot._categories[]) do (name, color)
         return FakePlot(Attributes(; plot = plot, label = name, color = color))
     end
 end
@@ -517,13 +521,14 @@ function xy_to_rect(x, y)
 end
 
 """
-    Resampler(matrix; max_resolution=automatic, method=Interpolations.Linear(), update_while_button_pressed=false)
+    Resampler(matrix; max_resolution=automatic, method=FastInterpolations.LinearInterp(), update_while_button_pressed=false)
 
 Creates a resampling type which can be used with `heatmap`, to display large images/heatmaps.
-Passed can be any array that supports `array(linrange, linrange)`, as the interpolation interface from Interpolations.jl.
-If the array doesn't support this, it will be converted to an interpolation object via: `Interpolations.interpolate(data, Interpolations.BSpline(method))`.
+Passed can be any array that supports `array(linrange, linrange)` (the resampling interface).
+Otherwise it is wrapped in an interpolation object built from `method`, which may be a
+`FastInterpolations` method (the default) or an `Interpolations` degree.
 * `max_resolution` can be set to `automatic` to use the full resolution of the screen, or a tuple/integer of the desired resolution.
-* `method` is the interpolation method used, defaulting to `Interpolations.Linear()`.
+* `method` is the interpolation method used, defaulting to `FastInterpolations.LinearInterp()`.
 * `update_while_button_pressed` will update the heatmap while a mouse button is pressed, useful for zooming/panning. Set it to false for e.g. WGLMakie to avoid updating while dragging.
 * `lowres_background` will always show a low resolution background while the high resolution image is being calculated.
 """
@@ -542,6 +547,7 @@ end
 
 using Interpolations: Interpolations
 using ImageBase: ImageBase
+using FastInterpolations: FastInterpolations
 
 _to_resolution(::Automatic) = automatic
 _to_resolution(x::Tuple{Int, Int}) = x
@@ -556,10 +562,31 @@ function Resampler(resampler::Resampler, new_data)
     )
 end
 
+# FastInterpolations-backed `AbstractMatrix` payload: the data plus a persistent interpolant, built
+# once. Used both as a `Resampler` payload and as a `Pyramid` level.
+struct FastInterpolant{T, D <: AbstractMatrix{T}, I} <: AbstractMatrix{T}
+    data::D
+    itp::I
+end
+
+# Built over axes `axs` (its own for a `Resampler` payload, the original image's for a `Pyramid` level).
+function FastInterpolant(axs, data::AbstractMatrix{T}, method::FastInterpolations.AbstractInterpMethod) where {T}
+    # InBounds: resample_image / Pyramid never query outside the axes.
+    itp = FastInterpolations.interp(axs, data; method = method, extrap = FastInterpolations.InBounds())
+    return FastInterpolant{T, typeof(data), typeof(itp)}(data, itp)
+end
+
+Base.size(r::FastInterpolant) = size(r.data)
+Base.getindex(r::FastInterpolant, i::Int, j::Int) = r.data[i, j]
+
+function (r::FastInterpolant)(xrange::AbstractVector, yrange::AbstractVector)
+    return r.itp(FastInterpolations.GriddedQuery(xrange, yrange))
+end
+
 function Resampler(
         data;
         max_resolution = automatic,
-        method = Interpolations.Linear(),
+        method = FastInterpolations.LinearInterp(),
         update_while_button_pressed = false,
         lowres_background = true,
         resolution = nothing
@@ -576,7 +603,12 @@ function Resampler(
     res = _to_resolution(max_resolution)
     if applicable(data, lr, lr)
         return Resampler(data, res, update_while_button_pressed, lowres_background)
+    elseif method isa FastInterpolations.AbstractInterpMethod
+        # FastInterpolations backend (the default).
+        dataf32 = el32convert(data)
+        return Resampler(FastInterpolant(axes(dataf32), dataf32, method), res, update_while_button_pressed, lowres_background)
     else
+        # Opt-in Interpolations backend (an `Interpolations` degree).
         dataf32 = el32convert(data)
         ET = eltype(dataf32)
         # Interpolations happily converts to Float64 here, but that's not desirable for e.g. RGB{N0f8}, or Float32 data
@@ -711,33 +743,33 @@ function Makie.plot!(p::HeatmapShader)
 
     map!(xy_to_rect, p.attributes, [:x, :y], :data_limits)
 
+
+    T = eltype(p.image[].data) <: Colors.Colorant ? RGB{Float32} : Float32
     map!(p.attributes, [:image, :x, :y, :max_resolution, :data_limits, :colorrange], [:x_endpoints, :y_endpoints, :overview_image, :computed_colorrange]) do image, x, y, max_resolution, image_area, crange
         x, y, img = resample_image(x, y, image.data, max_resolution, image_area)
         cr = calculate_colorrange(img, crange)
         if image.lowres_background
             val = cr isa Vec2 ? mean(cr) : 0.0f0 # TODO color mean?
-            _img = Float32[val for _ in 1:1, _ in 1:1]
+            _img = [T(val) for _ in 1:1, _ in 1:1]
         else
             _img = img
         end
         return x, y, _img, cr
     end
 
-    register_computation!(p.attributes, [:image, :x, :y, :max_resolution, :slow_limits], [:lx_endpoints, :ly_endpoints, :limit_image, :l_visible]) do (image, x, y, max_resolution, limits), changed, last
+    ComputePipeline.map!(
+        p.attributes,
+        [:image, :x, :y, :max_resolution, :slow_limits],
+        [:lx_endpoints, :ly_endpoints, :limit_image, :l_visible],
+        init = (p.x[], p.x[], fill(zero(T), 2, 2), false)
+    ) do image, x, y, max_resolution, limits
         xe_ye_oimg = resample_image(x, y, image.data, max_resolution, limits)
-        if isnothing(xe_ye_oimg)
-            if isnothing(last) # first downsample
-                return (x, x, fill(0.0f0, 2, 2), false)
-            else
-                return (nothing, nothing, nothing, false) # simply dont update!
-            end
-        end
+        isnothing(xe_ye_oimg) && return nothing
         return (xe_ye_oimg..., true)
     end
 
     gpa = generic_plot_attributes(p)
     cpa = colormap_attributes(p)
-
 
     # Create an overview image that gets shown behind, so we always see the "big picture"
     # In case updating the detailed view takes longer
@@ -756,18 +788,24 @@ struct Pyramid{T, M <: AbstractMatrix{T}} <: AbstractMatrix{T}
     data::Vector{M}
 end
 
-function Pyramid(data::AbstractMatrix; min_resolution = 1024, mode = Interpolations.Linear())
+# One pyramid level over axes `axs`, dispatched on `mode`: a `FastInterpolations` method (default)
+# → `FastInterpolant`, or an `Interpolations` degree → a `Gridded` interpolation. Both are
+# AbstractMatrix payloads queried via `level(xrange, yrange)`.
+function pyramid_level(ET::Type, axs, resized, mode)
+    return Interpolations.interpolate(eltype(ET), ET, axs, resized, Interpolations.Gridded(mode))
+end
+function pyramid_level(::Type, axs, resized::AbstractMatrix, mode::FastInterpolations.AbstractInterpMethod)
+    return FastInterpolant(axs, resized, mode)
+end
+
+function Pyramid(data::AbstractMatrix; min_resolution = 1024, mode = FastInterpolations.LinearInterp())
     ranges(d) = (LinRange(1, size(data, 1), size(d, 1)), LinRange(1, size(data, 2), size(d, 2)))
     ET = ImageBase.restrict_eltype(first(data))
     resized = convert(Matrix{ET}, data)
-    pyramid = [Interpolations.interpolate(eltype(ET), ET, ranges(resized), resized, Interpolations.Gridded(mode))]
+    pyramid = [pyramid_level(ET, ranges(resized), resized, mode)]
     while any(x -> x > min_resolution, size(resized))
         resized = ImageBase.restrict(resized)
-        interp = Interpolations.interpolate(
-            eltype(ET), ET, ranges(resized), resized,
-            Interpolations.Gridded(mode)
-        )
-        push!(pyramid, interp)
+        push!(pyramid, pyramid_level(ET, ranges(resized), resized, mode))
     end
     return Pyramid(pyramid)
 end
