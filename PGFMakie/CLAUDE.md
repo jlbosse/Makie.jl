@@ -61,10 +61,10 @@ Work in the repo-level `.scratch` environment (see the root `AGENTS.md`), with C
 
 ```julia
 using PGFMakie, LaTeXStrings
-include("PGFMakie/test/runtests.jl")   # ~2-3 min: compiles every figure with lualatex
+include("PGFMakie/test/runtests.jl")   # ~5 min: compiles every figure with lualatex
 ```
 
-- The tests save each figure as `.pgf`, `.tex`, `.pdf` and `.png`, and check for:
+- Besides unit tests (number formatting, escaping, unicode, rich text, font weights, inline display, sidecar names), the tests save a set of figures as `.pgf`, `.tex`, `.pdf` and `.png`, and check for:
   - no `NaN` and no scientific notation in the output
   - sidecar images that exist
   - the expected PNG size
@@ -77,16 +77,20 @@ include("PGFMakie/test/runtests.jl")   # ~2-3 min: compiles every figure with lu
 
 - Sidecar image names come from the output file name. They must be LaTeX safe, so `emit_image` replaces everything except `[A-Za-z0-9_-]`: `\pgfimage` breaks on spaces and prints the filename as text.
 - `image`'s default `uv_transform` is a vertical flip (`DEFAULT_IMAGE_UV_TRANSFORM` in `image.jl`), not the identity. Only that default is drawn as a direct image; other `uv_transform`s are rasterized by CairoMakie.
-- Reference images: `.scratch/render_refimages.jl` renders the ReferenceTests database with both backends into `PGFMakie/reference_images/`. It is shardable, resumable and memory-capped; see the comment at its top. Running many figures in one process grows memory, so use `--heap-size-hint` and few workers. `.scratch/compare_refimages.jl` flags pairs that differ a lot (after blurring, to ignore font differences) and writes `flagged/`, `flagged.txt` and `scores.csv`.
+- Reference images: `render_refimages.jl` renders the ReferenceTests database with both backends into `PGFMakie/reference_images/` (gitignored). It is shardable, resumable and memory-capped; see the comment at its top. `compare_refimages.jl` flags pairs that differ a lot (after blurring, to ignore font differences) and writes `flagged/`, `flagged.txt` and `scores.csv`; pairs listed in `reference_images/reviewed.txt` were checked by hand and are listed separately. Both scripts currently live in the (gitignored) `.scratch/` folder and aren't versioned.
+  - Rendering many figures in one process grows memory, so use `--heap-size-hint` and few workers: an earlier run with 3 unbounded workers got OOM-killed.
+  - The workers are separate Julia processes and don't pick up code changes while running. After fixing something, delete the affected PGFMakie images and re-render them (only missing images are rendered).
 
 - The first `save` in a fresh session takes over a minute to compile.
 - `FileIO` has no `.pgf` or `.tex` formats. `__init__` registers them, guarded with `haskey(FileIO.sym2info, ...)`.
-- Screen config defaults live in `Makie/src/theming.jl` under `PGFMakie = Attributes(...)`. The fields must match `ScreenConfig` exactly, in the same order, because `merge_screen_config` fills them positionally. Adding a config field means editing both.
+- Screen config defaults live in `Makie/src/theming.jl` under `PGFMakie = Attributes(...)`. `merge_screen_config` looks up every `ScreenConfig` field by name there, so each field needs a default with the same name. Adding a config field means editing both.
+- Figures are also offered as Makie's web MIMEs (`SUPPORTED_MIMES` in `display.jl`), which embed the PNG in an `<img>` of the logical figure size. Without them, notebook frontends that ignore the PNG's dpi (VS Code) show figures at `px_per_unit` times the size. `to_output_type` maps the web MIMEs to PNG output.
 - `julia tooling/formatter/format.jl` formats the whole repo and may touch unrelated files. Revert anything outside your change.
 
 ## Known limitations / TODO
 
 - Makie lays text out with its own fonts, so LaTeX text can be wider or narrower than the space reserved for it. Upstream PR #5717 (pluggable `layout_text`, on the breaking branch) is the hook for measuring text with LaTeX.
-- `RichText` is emitted as plain text; sub/superscripts and per-span colors are dropped.
+- Rich text `offset` attributes are ignored.
+- Open differences from the reference images: the Tooltip's dotted outline is black instead of red; "Float64 model with rotation" shows tick labels CairoMakie hides; perspective-projected 3D text comes out somewhat smaller than in CairoMakie; sub-pixel scatter markers look darker.
 - Lines with per-vertex colors use one flat color per segment. Gradient bands and hatch patterns are rasterized.
 - Scatter markers are one path each, except opaque unstroked markers of the same color, which are batched. `\pgfsys@defobject` markers would make large scatters faster.
