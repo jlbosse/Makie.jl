@@ -24,6 +24,7 @@ end
 include("writer.jl")
 include("screen.jl")
 include("latex.jl")
+include("theme.jl")
 include("display.jl")
 include("render.jl")
 include("lines.jl")
@@ -31,6 +32,8 @@ include("scatter.jl")
 include("text.jl")
 include("image.jl")
 include("poly.jl")
+
+export pgf_theme, set_pgf_theme!
 
 function __init__()
     # FileIO doesn't know about .pgf and .tex files
