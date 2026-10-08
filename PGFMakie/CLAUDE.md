@@ -10,6 +10,7 @@ PGFMakie is a Makie backend that writes figures as PGF code (like matplotlib's `
 | `src/screen.jl` | `ScreenConfig`, `Screen`, `activate!`, `apply_screen_config!`. |
 | `src/display.jl` | `backend_show` for `.pgf`/`.tex`/`.pdf`/`.png`, `colorbuffer`, `display`. |
 | `src/latex.jl` | LaTeX escaping, picture/document wrappers, helper TeX macros, compiling with the TeX engine, and PDF→PNG via `Poppler_jll.pdftocairo`. |
+| `src/theme.jl` | `pgf_theme` / `set_pgf_theme!`: LaTeX-sized fonts, line widths, marker size and figure size (geometry only). |
 | `src/render.jl` | Render loop (`pgf_draw`), per-scene scopes and clipping, background, `draw_plot` recursion, CairoMakie raster fallback, sidecar images. |
 | `src/lines.jl`, `scatter.jl`, `text.jl`, `image.jl`, `poly.jl` | `draw_atomic` per plot type. |
 
@@ -84,6 +85,7 @@ include("PGFMakie/test/runtests.jl")   # ~5 min: compiles every figure with lual
 - The first `save` in a fresh session takes over a minute to compile.
 - `FileIO` has no `.pgf` or `.tex` formats. `__init__` registers them, guarded with `haskey(FileIO.sym2info, ...)`.
 - Screen config defaults live in `Makie/src/theming.jl` under `PGFMakie = Attributes(...)`. `merge_screen_config` looks up every `ScreenConfig` field by name there, so each field needs a default with the same name. Adding a config field means editing both.
+- **Theme** (`theme.jl`). `pgf_theme(; fontsize, tickfontsize, linewidth, thinwidth, markersize, textwidth, width_fraction, aspect)` takes TeX points and converts to Makie units with `x / pt_per_unit` (1 unit = 0.75 bp). Defaults: 10pt text, 8pt ticks, 4pt markers, 469.75pt text width, golden-ratio aspect. `set_pgf_theme!` is `Makie.update_theme!(pgf_theme(...))`, so it only changes these keys and works after `AlgebraOfGraphics.set_aog_theme!()`; a later `set_theme!`/`set_aog_theme!` resets them. Keep the theme geometry-only (no fonts, colors, palettes), and build it with `Theme`/`Attributes` so `update_theme!` merges nested `Axis`/`Legend`/`Colorbar` instead of replacing them. `Figure(size)` is the total outer size; axes shrink to fit labels and legends. Makie's unit is the bp, TeX's `pt` is 1/72.27 in, so widths are ~0.4% off unless scaled by `72 / 72.27`.
 - Figures are also offered as Makie's web MIMEs (`SUPPORTED_MIMES` in `display.jl`), which embed the PNG in an `<img>` of the logical figure size. Without them, notebook frontends that ignore the PNG's dpi (VS Code) show figures at `px_per_unit` times the size. `to_output_type` maps the web MIMEs to PNG output.
 - `julia tooling/formatter/format.jl` formats the whole repo and may touch unrelated files. Revert anything outside your change.
 
