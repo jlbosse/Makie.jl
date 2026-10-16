@@ -16,7 +16,7 @@ Poppler_jll = "9c32591e-4766-534b-9725-b71a8799265b"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
-CairoMakie = "=0.15.15"
+CairoMakie = "=0.15.16"
 Colors = "0.10, 0.11, 0.12, 0.13"
 FileIO = "1.6"
 GeometryBasics = "0.5"
